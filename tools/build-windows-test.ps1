@@ -41,7 +41,9 @@ foreach ($package in @(@('Microsoft.ML.OnnxRuntime.DirectML','1.24.4','ort'), @(
 }
 $env:CUDA_PATH = "$deps/cuda"
 $env:PATH = "$env:CUDA_PATH/bin;$env:PATH"
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_CUDA_COMPILER=$deps/cuda/bin/nvcc.exe" "-DAJI_TRT_ROOT=$deps/trt" "-DAJI_TRT_LIB=$deps/trt/lib" -DAJI_NVINFER=nvinfer_11 "-DAJI_ORT_ROOT=$deps/ort" "-DAJI_DML_ROOT=$deps/dml"
+# The released CMake project expects import libraries directly in TRT_ROOT.
+Copy-Item -Path "$deps/trt/lib/*.lib" -Destination "$deps/trt"
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_CUDA_COMPILER=$deps/cuda/bin/nvcc.exe" "-DAJI_TRT_ROOT=$deps/trt" -DAJI_NVINFER=nvinfer_11 "-DAJI_ORT_ROOT=$deps/ort" "-DAJI_DML_ROOT=$deps/dml"
 if ($LASTEXITCODE -ne 0) { throw 'CMake configuration failed' }
 cmake --build build --parallel 2
 if ($LASTEXITCODE -ne 0) { throw 'Inference build failed' }
