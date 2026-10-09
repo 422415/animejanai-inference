@@ -45,10 +45,10 @@ $env:PATH = "$env:CUDA_PATH/bin;$env:PATH"
 Copy-Item -Path "$deps/trt/lib/*.lib" -Destination "$deps/trt"
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_CUDA_COMPILER=$deps/cuda/bin/nvcc.exe" "-DAJI_TRT_ROOT=$deps/trt" -DAJI_NVINFER=nvinfer_11 "-DAJI_ORT_ROOT=$deps/ort" "-DAJI_DML_ROOT=$deps/dml"
 if ($LASTEXITCODE -ne 0) { throw 'CMake configuration failed' }
-cmake --build build --parallel 2
+cmake --build build --parallel 2 --target aji_harness
 if ($LASTEXITCODE -ne 0) { throw 'Inference build failed' }
 [IO.Directory]::CreateDirectory('build/Release') | Out-Null
-foreach ($name in @('aji.dll','aji_dml.dll','aji_trt.dll','aji_harness.exe','aji_harness_dml.exe','aji_kernel_test.exe','aji_msb444_test.exe')) {
+foreach ($name in @('aji.dll','aji_trt.dll','aji_harness.exe')) {
     Copy-Item -LiteralPath "build/$name" -Destination 'build/Release'
 }
 [ordered]@{ commit = (git rev-parse HEAD); cuda = '13.4.1'; tensorRT = '11.3.0.99'; onnxRuntime = '1.24.4'; directML = '1.15.4';

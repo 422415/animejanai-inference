@@ -18,20 +18,16 @@ jobs:
         with:
           path: build-deps
           key: aji-windows-cuda134-trt113-ort1244-dml1154-v1
-      - name: Build dispatcher and both inference backends
+      - name: Build TensorRT backend and harness
         shell: pwsh
         run: ./tools/build-windows-test.ps1
       - uses: actions/upload-artifact@v4
         with:
-          name: aji-windows-nvdec-444-test
+          name: aji-windows-static-onnx-test
           path: |
             build/Release/aji.dll
-            build/Release/aji_dml.dll
             build/Release/aji_trt.dll
-            build/Release/aji_harness_dml.exe
             build/Release/aji_harness.exe
-            build/Release/aji_kernel_test.exe
-            build/Release/aji_msb444_test.exe
             build/build-info.json
           if-no-files-found: error
           retention-days: 14
